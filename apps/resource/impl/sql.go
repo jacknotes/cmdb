@@ -30,9 +30,7 @@ const (
 		FROM
 			resource_tag 
 		WHERE
-			resource_id =? 
-			AND t_key =? 
-			AND t_value =?;
+			resource_id =? ;
 	`
 	sqlInsertOrUpdateResourceTag = `
 		INSERT INTO resource_tag ( type, t_key, t_value, description, resource_id, weight, create_at)

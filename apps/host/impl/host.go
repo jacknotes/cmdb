@@ -5,11 +5,9 @@ import (
 	"database/sql"
 
 	"github.com/infraboard/mcube/exception"
+	"github.com/infraboard/mcube/pb/request"
 	"github.com/infraboard/mcube/sqlbuilder"
 	"github.com/jacknotes/cmdb/apps/resource/impl"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/jacknotes/cmdb/apps/host"
 )
@@ -181,10 +179,44 @@ func (s *service) DescribeHost(ctx context.Context, req *host.DescribeHostReques
 
 func (s *service) UpdateHost(ctx context.Context, req *host.UpdateHostRequest) (
 	*host.Host, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateHost not implemented")
+	// 检测参数合法性
+	if err := req.Validate(); err != nil {
+		return nil, exception.NewBadRequest("validate update host error, %s", err)
+	}
+
+	// 查询出该条实例的数据
+	ins, err := s.DescribeHost(ctx, host.NewDescribeHostRequestWithID(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	switch req.UpdateMode {
+	case request.UpdateMode_PATCH:
+		ins.Patch(req.UpdateHostData)
+	default:
+		ins.Put(req.UpdateHostData)
+	}
+
+	// 更新数据库
+	if err := s.update(ctx, ins); err != nil {
+		return nil, err
+	}
+
+	return ins, nil
 }
 
 func (s *service) ReleaseHost(ctx context.Context, req *host.ReleaseHostRequest) (
 	*host.Host, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReleaseHost not implemented")
+	ins, err := s.DescribeHost(ctx, host.NewDescribeHostRequestWithID(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	// 删除云商上该主机
+
+	if err := s.delete(ctx, req); err != nil {
+		return nil, err
+	}
+
+	return ins, nil
 }

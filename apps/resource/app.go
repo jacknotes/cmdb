@@ -236,3 +236,7 @@ func NewThirdTag(key, value string) *Tag {
 		Weight: 1,
 	}
 }
+
+func NewInformation() *Information {
+	return &Information{}
+}

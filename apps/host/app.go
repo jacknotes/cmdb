@@ -2,6 +2,7 @@ package host
 
 import (
 	context "context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/infraboard/mcube/flowcontrol/tokenbucket"
 	"github.com/infraboard/mcube/http/request"
 	pb_request "github.com/infraboard/mcube/pb/request"
+	"github.com/infraboard/mcube/types/ftime"
 	"github.com/jacknotes/cmdb/apps/resource"
 	"github.com/jacknotes/cmdb/utils"
 	"google.golang.org/protobuf/proto"
@@ -83,9 +85,12 @@ func NewDeleteHostRequestWithID(id string) *ReleaseHostRequest {
 
 func NewUpdateHostRequest(id string) *UpdateHostRequest {
 	return &UpdateHostRequest{
-		Id:             id,
-		UpdateMode:     pb_request.UpdateMode_PUT,
-		UpdateHostData: &UpdateHostData{},
+		Id:         id,
+		UpdateMode: pb_request.UpdateMode_PUT,
+		UpdateHostData: &UpdateHostData{
+			Information: resource.NewInformation(),
+			Describe:    NewDescribe(),
+		},
 	}
 }
 
@@ -111,6 +116,40 @@ func (h *Host) Put(req *UpdateHostData) {
 
 func (h *Host) ShortDesc() string {
 	return fmt.Sprintf("%s %s", h.Information.Name, h.Information.PrivateIp)
+}
+
+func (h *Host) Patch(req *UpdateHostData) error {
+	oldRH, oldDH := h.Base.ResourceHash, h.Base.DescribeHash
+
+	err := ObjectPatch(h.Information, req.Information)
+	if err != nil {
+		return err
+	}
+
+	err = ObjectPatch(h.Describe, req.Describe)
+	if err != nil {
+		return err
+	}
+
+	h.Information.UpdateAt = ftime.Now().Timestamp()
+	h.GenHash()
+
+	if h.Base.ResourceHash != oldRH {
+		h.Base.ResourceHashChanged = true
+	}
+	if h.Base.DescribeHash != oldDH {
+		h.Base.DescribeHashChanged = true
+	}
+
+	return nil
+}
+
+func ObjectPatch(old, new interface{}) error {
+	newByte, err := json.Marshal(new)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(newByte, old)
 }
 
 func NewUpdateHostDataByIns(ins *Host) *UpdateHostData {
@@ -258,5 +297,11 @@ func (p *BasePagerV2) CheckHasNext(current int64) {
 	} else {
 		// 直接调整指针到下一页
 		p.pageNumber++
+	}
+}
+
+func NewDescribe() *Describe {
+	return &Describe{
+		Extra: map[string]string{},
 	}
 }

@@ -64,6 +64,29 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Writes(response.NewData(host.Host{})).
 		Returns(200, "OK", response.NewData(host.Host{})).
 		Returns(404, "Not Found", nil))
+
+	ws.Route(ws.PUT("/{id}").To(h.UpdateHost).
+		Doc("更新主机").
+		Param(ws.PathParameter("id", "identifier of the host").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Metadata(label.Resource, h.Name()).
+		Metadata(label.Action, label.Update.Value()).
+		Reads(host.UpdateHostData{}))
+
+	ws.Route(ws.PATCH("/{id}").To(h.PatchHost).
+		Doc("更新主机").
+		Param(ws.PathParameter("id", "identifier of the host").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Metadata(label.Resource, h.Name()).
+		Metadata(label.Action, label.Update.Value()).
+		Reads(host.UpdateHostData{}))
+
+	ws.Route(ws.DELETE("/{id}").To(h.DeleteHost).
+		Doc("删除主机").
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Metadata(label.Resource, h.Name()).
+		Metadata(label.Action, label.Delete.Value()).
+		Param(ws.PathParameter("id", "identifier of the host").DataType("string")))
 }
 
 func init() {
