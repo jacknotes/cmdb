@@ -3,7 +3,8 @@ MAIN_FILE_PAHT := "main.go"
 PKG := "github.com/jacknotes/cmdb"
 IMAGE_PREFIX := "github.com/jacknotes/cmdb"
 
-MOD_DIR := $(shell go env GOPATH)/pkg/mod
+# windows下需要自定义路径
+MOD_DIR := "C:/Users/jack/go/pkg/mod"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/ | grep -v redis)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
@@ -61,8 +62,8 @@ install: ## Install depence go package
 
 pb: ## Copy mcube protobuf files to common/pb
 	@mkdir -pv common/pb/github.com/infraboard/mcube/pb
-	@cp -r ${MCUBE_PKG_PATH}/pb/* common/pb/github.com/infraboard/mcube/pb
-	@sudo rm -rf common/pb/github.com/infraboard/mcube/pb/*/*.go
+	@cp -a ${MCUBE_PKG_PATH}/pb/* common/pb/github.com/infraboard/mcube/pb
+	@rm -rf common/pb/github.com/infraboard/mcube/pb/*/*.go
 
 gen: ## Init Service
 	@protoc -I=. -I=common/pb --go_out=. --go_opt=module=${PKG} --go-grpc_out=. --go-grpc_opt=module=${PKG} apps/*/pb/*.proto
