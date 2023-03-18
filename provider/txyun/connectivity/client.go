@@ -39,6 +39,9 @@ func LoadClientFromEnv() error {
 	if err := env.Parse(client); err != nil {
 		return err
 	}
+	fmt.Println(client.Region)
+	fmt.Println(client.SecretID)
+	fmt.Println(client.SecretKey)
 
 	return nil
 }

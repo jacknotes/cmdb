@@ -1,4 +1,4 @@
-package connectivity
+package connectivity_test
 
 import (
 	"fmt"
