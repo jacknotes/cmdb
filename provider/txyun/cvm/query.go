@@ -6,6 +6,7 @@ import (
 	cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
 
 	"github.com/jacknotes/cmdb/apps/host"
+	"github.com/jacknotes/cmdb/utils"
 )
 
 // 查看实例列表
@@ -18,11 +19,21 @@ func (o *CVMOperator) Query(req *cvm.DescribeInstancesRequest) (*host.HostSet, e
 
 	fmt.Println(resp.ToJsonString())
 	// 需要把腾讯云CVM的数据结构转化为我们定义的Host
-	// set := o.transferSet(resp.Response.InstanceSet)
-	// set.Total = utils.PtrInt64(resp.Response.TotalCount)
-	return host.NewHostSet(), nil
+	set := o.transferSet(resp.Response.InstanceSet)
+	set.Total = utils.PtrInt64(resp.Response.TotalCount)
+	return set, nil
 }
 
-func (o *CVMOperator) PageQuery() host.Pager {
-	return newPager(20, o)
+func NewPageQueryRequest(reqPerSecond int) *PageQueryRequest {
+	return &PageQueryRequest{
+		reqPerSecond: reqPerSecond,
+	}
+}
+
+type PageQueryRequest struct {
+	reqPerSecond int
+}
+
+func (o *CVMOperator) PageQuery(req *PageQueryRequest) host.Pager {
+	return newPager(20, o, req.reqPerSecond)
 }

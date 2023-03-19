@@ -26,10 +26,12 @@ func TestQueryCVMInstance(t *testing.T) {
 
 func TestPageQueryCVMInstance(t *testing.T) {
 	should := assert.New(t)
-	pg := operator.PageQuery()
+	// 每秒5个请求速率限制, 1/5
+	pg := operator.PageQuery(cvm.NewPageQueryRequest(5))
 	HasNext := true
 	for HasNext {
 		ps := pg.Next()
+
 		should.NoError(ps.Err)
 		fmt.Println(ps.Data)
 		HasNext = ps.HasNext
