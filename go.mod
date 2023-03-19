@@ -31,6 +31,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sts v1.0.619
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vpc v1.0.619
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.41
+	go.uber.org/zap v1.20.0
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.0
 )
@@ -68,7 +69,6 @@ require (
 	go.mongodb.org/mongo-driver v1.9.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	go.uber.org/zap v1.20.0 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect

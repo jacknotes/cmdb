@@ -5,4 +5,5 @@ import (
 	_ "github.com/jacknotes/cmdb/apps/book/impl"
 	_ "github.com/jacknotes/cmdb/apps/host/impl"
 	_ "github.com/jacknotes/cmdb/apps/resource/impl"
+	_ "github.com/jacknotes/cmdb/apps/secret/impl"
 )

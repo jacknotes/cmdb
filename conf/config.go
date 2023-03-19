@@ -7,11 +7,16 @@ import (
 	"time"
 
 	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
 	db *sql.DB
+)
+
+const (
+	CIPHER_TEXT_PREFIX = "@ciphered@"
 )
 
 func newConfig() *Config {
