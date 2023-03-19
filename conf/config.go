@@ -15,6 +15,7 @@ var (
 	db *sql.DB
 )
 
+// cbc加密前缀，用作判断是否加解密
 const (
 	CIPHER_TEXT_PREFIX = "@ciphered@"
 )
